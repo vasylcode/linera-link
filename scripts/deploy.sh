@@ -18,24 +18,38 @@ WALLET_DIR="$2"
 
 if [ "$1" -eq 0 ]; then
     echo "Running in debug without building, wallet dir = $WALLET_DIR"
-    cd target/debug
+    TARGET_DIR="debug"
 elif [ "$1" -eq 1 ]; then
     echo "Building in debug and then running, wallet dir = $WALLET_DIR"
-    cargo build && cd target/debug
+    cargo build
+    TARGET_DIR="debug"
 elif [ "$1" -eq 2 ]; then
     echo "Building in release and then running, wallet dir = $WALLET_DIR"
-    cargo build --release && cd target/release
+    cargo build --release
+    TARGET_DIR="release"
 else
     echo "Invalid argument. Use 0 for debug without building, 1 for debug with building, or 2 for release with building."
     exit 1
 fi
 
-BYTE_ID=`linera publish-bytecode ../wasm32-unknown-unknown/release/linera-link_{contract,service}.wasm`
-APP_ID=`linera create-application $BYTE_ID`
+LINK_BYTE_ID=`linera publish-bytecode ./target/wasm32-unknown-unknown/$TARGET_DIR/linera-link_{contract,service}.wasm`
+LINK_APP_ID=`linera create-application $LINK_BYTE_ID`
 
 echo -e "\nLinera-Link successfully deployed!"
-echo -e "Bytecode ID: $BYTE_ID"
-echo -e "Application ID: $APP_ID\n"
+echo -e "Bytecode ID: $LINK_BYTE_ID"
+echo -e "Application ID: $LINK_APP_ID\n"
+
+FUNGIBLE_BYTE_ID=`linera publish-bytecode ./target/wasm32-unknown-unknown/$TARGET_DIR/fungible_{contract,service}.wasm`
+FUNGIBLE_APP_ID=`linera create-application $FUNGIBLE_BYTE_ID \
+    --json-argument '{ "accounts": {
+        "User:445991f46ae490fe207e60c95d0ed95bf4e7ed9c270d4fd4fa555587c2604fe1": "500.",
+        "User:c2f98d76c332bf809d7f91671eb76e5839c02d5896209881368da5838d85c83f": "100."
+    } }'`
+
+
+echo -e "\nLinera-Fungible successfully deployed!"
+echo -e "Bytecode ID: $FUNGIBLE_BYTE_ID"
+echo -e "Application ID: $FUNGIBLE_APP_ID\n"
 
 function create_wallet() {
     WALLET=$WALLET_DIR/wallet_$1.json
@@ -49,7 +63,7 @@ function create_wallet() {
     PUB_KEY=`linera --wallet $WALLET --storage $STORAGE keygen`
 
     echo -e "\nOpening chain for wallet #$1...\n"
-    CHAIN=`linera open-chain --to-public-key $PUB_KEY`
+    CHAIN=$(linera open-chain --to-public-key $PUB_KEY 2>/dev/null)
 
     MES_ID=$(echo "$CHAIN" | sed -n '1 p')
 
