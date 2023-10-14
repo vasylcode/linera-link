@@ -36,8 +36,5 @@ pub struct User {
 pub enum Operation {
     SetUser {
         username: String,
-        // owner: Owner,
-        // chain_id: ChainId,
-        // timestamp: Timestamp,
     },
 }

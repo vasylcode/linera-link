@@ -7,7 +7,6 @@ use async_trait::async_trait;
 use linera_sdk::{
     base::{SessionId, WithContractAbi, Owner},
     contract::system_api,
-    // contract::system_api::{self, current_system_time},
     ApplicationCallResult, CalleeContext, Contract, ExecutionResult, MessageContext,
     OperationContext, SessionCallResult, ViewStateStorage,
 };
@@ -93,7 +92,6 @@ impl Application {
     ) -> Result<(), ContractError> {
         let timestamp = system_api::current_system_time();
         let chain_id = system_api::current_chain_id();
-        // let owner = "123";
         log::info!(
             "username = {:?} owner = {:?} chain = {:?} timestamp = {:?}",
             username,
@@ -103,7 +101,6 @@ impl Application {
         );
 
         match context.authenticated_signer {
-            // Some(owner) => {
             Some(_) => {
                 let _ = self.set_user(User {
                     username,
