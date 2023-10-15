@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 import { useForm } from "@mantine/form";
-import { TextInput } from "@mantine/core";
+import { TextInput, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { Button } from "@mantine/core";
+import { useRouter } from "next/navigation";
 
 export default function ConnectWallet() {
 	const form = useForm({
@@ -23,21 +23,33 @@ export default function ConnectWallet() {
 		},
 	});
 
-	// const [username, setUsername] = useState("");
+	const [username, setUsername] = useState("");
 	const [error, setError] = useState("");
+	const router = useRouter();
 
 	const SET_USER = gql`
-		mutation SetUser($username: String) {
+		mutation SetUser($username: String!) {
 			setuser(username: $username)
 		}
 	`;
 
+	const GET_USER = gql`
+		query GetUser($username: String) {
+			users(string: $username) {
+				username
+				chainId
+				owner
+				timestamp
+			}
+		}
+	`;
+
 	const [setUser, { loading: setUserLoading }] = useMutation(SET_USER, {
-		onError: (error) => setError("Error: " + error.networkError.result),
+		onError: (error) => setError("Error: " + error.message),
 		onCompleted: () => {
 			notifications.show({
 				title: "Account Connection Successful",
-				message: "Your account has been successfully created 🎉",
+				message: "Your account has been successfully created x🎉",
 				color: "green",
 				radius: "md",
 			});
@@ -46,10 +58,14 @@ export default function ConnectWallet() {
 
 	const handleSubmit = async (form) => {
 		let username = form.username;
+		setUsername(username);
 		try {
 			const result = await setUser({ variables: { username } });
 			console.log(result);
+			router.push(`/${username}`);
+			HSOverlay.close(document.getElementById("hs-modal-wallet-connect"));
 		} catch (error) {
+			console.log(error);
 			setError("Error: " + error.message);
 		}
 	};
@@ -78,7 +94,7 @@ export default function ConnectWallet() {
 
 			<div
 				id="hs-modal-wallet-connect"
-				className="hs-overlay hidden w-full h-full fixed top-0 left-0 z-[60] overflow-x-hidden overflow-y-auto">
+				className="hs-overlay hidden flex items-center justify-center w-full h-full fixed top-0 left-0 z-[60] overflow-x-hidden overflow-y-auto">
 				<div className="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
 					<div className="bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
 						<div className="p-4 sm:p-7">
@@ -94,16 +110,18 @@ export default function ConnectWallet() {
 									<div className="grid gap-y-4">
 										<div>
 											<div className="relative">
-												<TextInput
-													mt="sm"
-													label="Username"
-													placeholder="Username"
-													leftSection="/"
-													withAsterisk
-													// value={username}
-													// onChange={(event) => setUsername(event.currentTarget.value)}
-													{...form.getInputProps("username")}
-												/>
+												{username ? (
+													<Loader className="mx-auto" color="green" size="xl" type="dots" />
+												) : (
+													<TextInput
+														mt="sm"
+														label="Username"
+														placeholder="Username"
+														leftSection="/"
+														withAsterisk
+														{...form.getInputProps("username")}
+													/>
+												)}
 
 												<div className="hidden absolute inset-y-0 right-0 flex items-center pointer-events-none pr-3">
 													<svg
@@ -121,7 +139,7 @@ export default function ConnectWallet() {
 
 										<button
 											type="submit"
-											data-hs-overlay="#hs-modal-wallet-connect"
+											// data-hs-overlay="#hs-modal-wallet-connect"
 											className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
 											Connect
 										</button>
