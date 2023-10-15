@@ -42,8 +42,8 @@ echo -e "Application ID: $LINK_APP_ID\n"
 FUNGIBLE_BYTE_ID=`linera publish-bytecode ./target/wasm32-unknown-unknown/$TARGET_DIR/fungible_{contract,service}.wasm`
 FUNGIBLE_APP_ID=`linera create-application $FUNGIBLE_BYTE_ID \
     --json-argument '{ "accounts": {
-        "User:445991f46ae490fe207e60c95d0ed95bf4e7ed9c270d4fd4fa555587c2604fe1": "500.",
-        "User:c2f98d76c332bf809d7f91671eb76e5839c02d5896209881368da5838d85c83f": "100."
+        "User:445991f46ae490fe207e60c95d0ed95bf4e7ed9c270d4fd4fa555587c2604fe1": "1000.",
+        "User:c2f98d76c332bf809d7f91671eb76e5839c02d5896209881368da5838d85c83f": "2000."
     } }'`
 
 
