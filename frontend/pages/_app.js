@@ -15,8 +15,9 @@ export default function App({ Component, pageProps }) {
 
 	const searchParams = useSearchParams();
 	let port = searchParams.get("port") ?? 8080;
+	let chainId = searchParams.get("chain") ?? process.env.NEXT_PUBLIC_CHAIN_ID;
 
-	const client = createApolloClient(port);
+	const client = createApolloClient(port, chainId);
 
 	return (
 		<ApolloProvider client={client}>

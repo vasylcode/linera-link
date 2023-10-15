@@ -83,9 +83,14 @@ export default function Profile() {
 
 	const iconStyle = { width: rem(20), height: rem(20) };
 
+	if (localStorage.getItem("login") == "false") {
+		localStorage.setItem("user", JSON.stringify(user));
+		localStorage.setItem("login", true);
+	}
+
 	return (
 		<div>
-			<Header user={user.owner} />
+			<Header />
 
 			<Card padding="xl" radius="md" className="bg-[var(--mantine-color-body)]">
 				<Card.Section
