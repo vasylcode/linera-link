@@ -4,10 +4,12 @@ import { useForm } from "@mantine/form";
 import { TextInput, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/navigation";
+import { IconIndentIncrease, IconWallet } from "@tabler/icons-react";
+import { useSearchParams } from "next/navigation";
 
 export default function ConnectWallet() {
 	const form = useForm({
-		initialValues: { username: "" },
+		initialValues: { username: "", chain_id: "" },
 		validateInputOnChange: true,
 
 		validate: {
@@ -20,12 +22,15 @@ export default function ConnectWallet() {
 				}
 				return null;
 			},
+			chain_id: (value) => (value && value.length !== 64 ? "Insert valid chain ID" : null),
 		},
 	});
 
 	const [username, setUsername] = useState("");
 	const [error, setError] = useState("");
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const existingPort = searchParams.get("port");
 
 	const SET_USER = gql`
 		mutation SetUser($username: String!) {
@@ -38,21 +43,49 @@ export default function ConnectWallet() {
 		onCompleted: () => {
 			notifications.show({
 				title: "Wallet Connection Successful",
-				message: "Your wallet has been successfully connected x🎉",
+				message: "Your wallet has been successfully connected 🎉",
 				color: "green",
 				radius: "md",
 			});
 		},
 	});
 
+	const REQUEST_APPLICATION = gql`
+		mutation RequestApplication($chainId: String!, $applicationId: String!) {
+			requestApplication(chainId: $chainId, applicationId: $applicationId)
+		}
+	`;
+
+	const [requestApplication, { loading: setRequestLoading }] = useMutation(REQUEST_APPLICATION, {
+		context: { clientName: "clear" },
+		onError: (error) => setError("Error: " + error.message),
+		// onCompleted: () => {},
+	});
+
 	const handleSubmit = async (form) => {
 		let username = form.username;
+		let chainId = form.chain_id;
+		let applicationId = process.env.NEXT_PUBLIC_LINK_APP_ID;
 		setUsername(username);
 		try {
-			const result = await setUser({ variables: { username } });
-			console.log(result);
-			router.push(`/${username}`);
-			HSOverlay.close(document.getElementById("hs-modal-wallet-connect"));
+			if (chainId && chainId !== process.env.NEXT_PUBLIC_LINK_CHAIN_ID) {
+				const newSearchParams = new URLSearchParams();
+				newSearchParams.append("port", existingPort);
+				newSearchParams.append("chain", chainId);
+				router.push({ pathname: router.pathname, search: newSearchParams.toString() });
+				const resultRequestApplication = await requestApplication({ variables: { chainId, applicationId } });
+				if (resultRequestApplication) {
+					const result = await setUser({ variables: { username } });
+					console.log(result);
+					router.push(`/${username}?port=${existingPort}&chain=${chainId}`);
+					HSOverlay.close(document.getElementById("hs-modal-wallet-connect"));
+				}
+			} else if (!chainId) {
+				const result = await setUser({ variables: { username } });
+				console.log(result);
+				router.push(`/${username}`);
+				HSOverlay.close(document.getElementById("hs-modal-wallet-connect"));
+			}
 		} catch (error) {
 			console.log(error);
 			setError("Error: " + error.message);
@@ -68,15 +101,7 @@ export default function ConnectWallet() {
 					type="button"
 					className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md bg-blue-100 border border-transparent font-semibold text-blue-500 hover:text-white hover:bg-blue-100 focus:outline-none focus:ring-2 ring-offset-white focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
 					data-hs-overlay="#hs-modal-wallet-connect">
-					<svg
-						className="w-4 h-4"
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						fill="currentColor"
-						viewBox="0 0 16 16">
-						<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
-					</svg>
+					<IconWallet />
 					Connect Wallet
 				</button>
 			</a>
@@ -89,8 +114,9 @@ export default function ConnectWallet() {
 						<div className="p-4 sm:p-7">
 							<div className="text-center">
 								<h2 className="block text-2xl font-bold text-gray-800 dark:text-gray-200">Let's start!</h2>
-								<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-									Enter your username, which will be used in your profile.
+								<p className="mt-2 text-sm text-gray-600 dark:text-gray-400 w-10/12 mx-auto">
+									Enter your username, which will be used in your profile. Provide a Chain ID if default chain
+									is not using.
 								</p>
 							</div>
 
@@ -102,14 +128,23 @@ export default function ConnectWallet() {
 												{username ? (
 													<Loader className="mx-auto" color="green" size="xl" type="dots" />
 												) : (
-													<TextInput
-														mt="sm"
-														label="Username"
-														placeholder="Username"
-														leftSection="/"
-														withAsterisk
-														{...form.getInputProps("username")}
-													/>
+													<>
+														<TextInput
+															mt="sm"
+															label="Username"
+															placeholder="Username"
+															leftSection="/"
+															withAsterisk
+															{...form.getInputProps("username")}
+														/>
+														<TextInput
+															mt="sm"
+															label="Chain ID"
+															placeholder="Chain ID"
+															leftSection={<IconIndentIncrease />}
+															{...form.getInputProps("chain_id")}
+														/>
+													</>
 												)}
 
 												<div className="hidden absolute inset-y-0 right-0 flex items-center pointer-events-none pr-3">
