@@ -1,13 +1,21 @@
 import { ApolloClient, InMemoryCache, HttpLink, split } from "@apollo/client";
 
+const LINK_CHAIN_ID = process.env.NEXT_PUBLIC_LINK_CHAIN_ID;
+const LINK_APP_ID = process.env.NEXT_PUBLIC_LINK_APP_ID;
+const LINK_PORT = process.env.NEXT_PUBLIC_LINK_PORT;
+
+const FUNGIBLE_CHAIN_ID = process.env.NEXT_PUBLIC_FUNGIBLE_CHAIN_ID;
+const FUNGIBLE_APP_ID = process.env.NEXT_PUBLIC_FUNGIBLE_APP_ID;
+const FUNGIBLE_PORT = process.env.NEXT_PUBLIC_FUNGIBLE_PORT;
+
 // linera-link app
 const httpLink = new HttpLink({
-	uri: "http://localhost:8080/chains/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65/applications/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65000000000000000000000000e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65020000000000000000000000",
+	uri: `http://localhost:${LINK_PORT}/chains/${LINK_CHAIN_ID}/applications/${LINK_APP_ID}`,
 });
 
 // fungible app
 const fungibleLink = new HttpLink({
-	uri: "http://localhost:8080/chains/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65/applications/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65030000000000000000000000e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65050000000000000000000000",
+	uri: `http://localhost:${FUNGIBLE_PORT}/chains/${FUNGIBLE_CHAIN_ID}/applications/${FUNGIBLE_APP_ID}`,
 });
 
 const client = new ApolloClient({

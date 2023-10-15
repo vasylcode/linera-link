@@ -1,4 +1,5 @@
 import { Paper, Group, Button, Text, TextInput, NumberInput, Textarea, Divider, Anchor, Stack } from "@mantine/core";
+import { useQuery, gql } from "@apollo/client";
 import { useToggle } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 
@@ -10,10 +11,24 @@ export default function Donate({ user }) {
 			message: "",
 		},
 		validate: {
-			amount: (value) => (value <= 0 ? "Amount should be >0" : null),
+			amount: (value) => (value <= 0 ? "Amount can not be 0" : null),
 			message: (value) => (value.length >= 300 ? "Message should be max 300 characters" : null),
 		},
 	});
+
+	const GET_ACCOUNTS = gql`
+		query {
+			accounts(accountOwner: "User:fc6fe4981a245008b84f1c023533f4b5b62cb3a803b39c8da5151f8b6a2135e0")
+		}
+	`;
+
+	const { loading, error, data } = useQuery(GET_ACCOUNTS, { context: { clientName: "fungible" } });
+
+	if (loading) return <p>Loading...</p>;
+	if (error) return <p>Error: {error.message}</p>;
+
+	console.log(data);
+
 	return (
 		<Paper
 			radius="md"
