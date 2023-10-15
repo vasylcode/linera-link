@@ -1,7 +1,20 @@
+import { useEffect, useState } from "react";
 import { ConnectWallet } from "@/components/features";
 import { IconCoin } from "@tabler/icons-react";
+import Link from "next/link";
 
-export default function Header({ user }) {
+export default function Header() {
+	const [login, setLogin] = useState(false);
+	const [user, setUser] = useState({});
+
+	useEffect(() => {
+		if (typeof window !== "undefined" && window.localStorage) {
+			const storedLogin = localStorage.getItem("login");
+			setLogin(storedLogin === "true");
+			setUser(JSON.parse(localStorage.getItem("user")));
+		}
+	}, []);
+
 	return (
 		<header className="flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
 			<nav
@@ -52,12 +65,11 @@ export default function Header({ user }) {
 							href="#">
 							About
 						</a>
-
-						{user ? (
+						{login ? (
 							<>
-								<a
+								<Link
 									className="flex items-center gap-x-2 font-medium text-gray-500 hover:text-blue-600 md:border-l md:border-gray-300 md:my-6 md:pl-6 md:pr-4 dark:border-gray-700 dark:text-gray-400 dark:hover:text-blue-500"
-									href="#">
+									href={`/${user.username}`}>
 									<button
 										type="button"
 										className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md bg-blue-100 border border-transparent font-semibold text-blue-500 hover:text-white hover:bg-blue-100 focus:outline-none focus:ring-2 ring-offset-white focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
@@ -71,13 +83,13 @@ export default function Header({ user }) {
 											viewBox="0 0 16 16">
 											<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
 										</svg>
-										{`${user.slice(0, 6)}...${user.slice(-4)}`}
+										{`${user.owner.slice(0, 6)}...${user.owner.slice(-4)}`}
 									</button>
-								</a>
-								<div className="flex flex-col items-center">
+								</Link>
+								{/* <div className="flex flex-col items-center">
 									<span className="text-blue-600 text-lg">100</span>
 									<IconCoin className="text-blue-500" />
-								</div>
+								</div> */}
 							</>
 						) : (
 							<ConnectWallet />

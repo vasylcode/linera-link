@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, gql } from "@apollo/client";
+import { useLazyQuery, useMutation, gql } from "@apollo/client";
 import { useForm } from "@mantine/form";
 import { TextInput, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -31,6 +31,17 @@ export default function ConnectWallet() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const existingPort = searchParams.get("port");
+
+	const GET_USER = gql`
+		query GetUser($username: String) {
+			users(string: $username) {
+				username
+				chainId
+				owner
+				timestamp
+			}
+		}
+	`;
 
 	const SET_USER = gql`
 		mutation SetUser($username: String!) {
@@ -76,13 +87,13 @@ export default function ConnectWallet() {
 				const resultRequestApplication = await requestApplication({ variables: { chainId, applicationId } });
 				if (resultRequestApplication) {
 					const result = await setUser({ variables: { username } });
-					console.log(result);
+					localStorage.setItem("login", false);
 					router.push(`/${username}?port=${existingPort}&chain=${chainId}`);
 					HSOverlay.close(document.getElementById("hs-modal-wallet-connect"));
 				}
 			} else if (!chainId) {
 				const result = await setUser({ variables: { username } });
-				console.log(result);
+				localStorage.setItem("login", false);
 				router.push(`/${username}`);
 				HSOverlay.close(document.getElementById("hs-modal-wallet-connect"));
 			}
