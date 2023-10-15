@@ -37,8 +37,8 @@ export default function ConnectWallet() {
 		onError: (error) => setError("Error: " + error.message),
 		onCompleted: () => {
 			notifications.show({
-				title: "Account Connection Successful",
-				message: "Your account has been successfully created x🎉",
+				title: "Wallet Connection Successful",
+				message: "Your wallet has been successfully connected x🎉",
 				color: "green",
 				radius: "md",
 			});
