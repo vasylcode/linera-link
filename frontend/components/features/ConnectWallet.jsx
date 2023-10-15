@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useMutation, gql } from "@apollo/client";
 import { useForm } from "@mantine/form";
 import { TextInput, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -30,17 +30,6 @@ export default function ConnectWallet() {
 	const SET_USER = gql`
 		mutation SetUser($username: String!) {
 			setuser(username: $username)
-		}
-	`;
-
-	const GET_USER = gql`
-		query GetUser($username: String) {
-			users(string: $username) {
-				username
-				chainId
-				owner
-				timestamp
-			}
 		}
 	`;
 
@@ -139,7 +128,6 @@ export default function ConnectWallet() {
 
 										<button
 											type="submit"
-											// data-hs-overlay="#hs-modal-wallet-connect"
 											className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
 											Connect
 										</button>
