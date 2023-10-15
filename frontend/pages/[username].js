@@ -1,8 +1,17 @@
 import { useRouter } from "next/router";
 import { useQuery, gql } from "@apollo/client";
-import { Card, Avatar, Text, Group, Button, CopyButton, ActionIcon, Tooltip, rem } from "@mantine/core";
-import { IconCurrencyEthereum, IconLink, IconCopy, IconCheck } from "@tabler/icons-react";
-import { Header } from "@/components/";
+import { Loader, Card, Avatar, Text, Group, Button, CopyButton, ActionIcon, Tooltip, Tabs, rem } from "@mantine/core";
+import {
+	IconCurrencyEthereum,
+	IconLink,
+	IconCopy,
+	IconCheck,
+	IconPhoto,
+	IconMessageCircle,
+	IconHome,
+} from "@tabler/icons-react";
+import { Supporters, Donate } from "@/components/profile";
+import { Header, Footer } from "@/components/";
 
 const GET_USER = gql`
 	query GetUser($username: String) {
@@ -39,8 +48,8 @@ const avatars = [
 ];
 
 const stats = [
-	{ value: "55K", label: "Followers" },
-	{ value: "410", label: "Follows" },
+	{ value: "55K", label: "Supporters" },
+	{ value: "410", label: "Supported" },
 	{ value: "2.34K", label: "Posts" },
 ];
 
@@ -52,7 +61,7 @@ export default function Profile() {
 		variables: { username },
 	});
 
-	if (loading) return <p>Loading...</p>;
+	if (loading) return <Loader className="mx-auto" color="blue" size="xl" type="dots" />;
 	if (error) return <p>Error: {error.message}</p>;
 
 	const user = data.users;
@@ -72,18 +81,13 @@ export default function Profile() {
 		</div>
 	));
 
+	const iconStyle = { width: rem(20), height: rem(20) };
+
 	return (
 		<div>
 			<Header user={user.owner} />
 
-			<Card
-				withBorder
-				padding="xl"
-				radius="md"
-				className="bg-[var(--mantine-color-body)]"
-				style={{
-					borderTop: "none",
-				}}>
+			<Card padding="xl" radius="md" className="bg-[var(--mantine-color-body)]">
 				<Card.Section
 					h={240}
 					style={{
@@ -179,14 +183,41 @@ export default function Profile() {
 				</Button>
 			</Card>
 
+			<Tabs color="blue" radius="md" defaultValue="home">
+				<Tabs.List justify="center">
+					<Tabs.Tab value="home" leftSection={<IconHome style={iconStyle} />}>
+						Home
+					</Tabs.Tab>
+					<Tabs.Tab value="messages" leftSection={<IconMessageCircle style={iconStyle} />} disabled>
+						Messages
+					</Tabs.Tab>
+					<Tabs.Tab value="gallery" leftSection={<IconPhoto style={iconStyle} />} disabled>
+						Gallery
+					</Tabs.Tab>
+				</Tabs.List>
+
+				<div className="container mx-auto mt-12">
+					<Tabs.Panel value="home" className="flex justify-around">
+						<Supporters />
+						<Donate user={user} />
+					</Tabs.Panel>
+
+					<Tabs.Panel value="messages">Messages tab content</Tabs.Panel>
+
+					<Tabs.Panel value="gallery">Gallery tab content</Tabs.Panel>
+				</div>
+			</Tabs>
+
 			{user && (
-				<div>
+				<div className="container mx-auto">
 					<p>Username: {user.username}</p>
 					<p>Chain ID: {user.chainId}</p>
 					<p>Owner: {user.owner}</p>
 					<p>Timestamp: {user.timestamp}</p>
 				</div>
 			)}
+
+			<Footer />
 		</div>
 	);
 }

@@ -1,0 +1,13 @@
+.text {
+    padding-top: 6px;
+}
+
+.body {
+    margin-top: 1.5rem;
+    cursor: pointer;
+    transition: transform 150ms ease, box-shadow 100ms ease;
+
+    @mixin hover {
+        transform: scale(1.01);
+    }
+}
