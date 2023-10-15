@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useQuery, gql } from "@apollo/client";
-import { Card, Avatar, Text, Group, Button } from "@mantine/core";
+import { Card, Avatar, Text, Group, Button, CopyButton, ActionIcon, Tooltip, rem } from "@mantine/core";
+import { IconCurrencyEthereum, IconLink, IconCopy, IconCheck } from "@tabler/icons-react";
+import { Header } from "@/components/";
 
 const GET_USER = gql`
 	query GetUser($username: String) {
@@ -72,19 +74,18 @@ export default function Profile() {
 
 	return (
 		<div>
-			<h1>{`Welcome ${username}`}</h1>
-			{user && (
-				<div>
-					<h1>User Profile</h1>
-					<p>Username: {user.username}</p>
-					<p>Chain ID: {user.chainId}</p>
-					<p>Owner: {user.owner}</p>
-					<p>Timestamp: {user.timestamp}</p>
-				</div>
-			)}
-			<Card withBorder padding="xl" radius="md" className="bg-[var(--mantine-color-body)]">
+			<Header user={user.owner} />
+
+			<Card
+				withBorder
+				padding="xl"
+				radius="md"
+				className="bg-[var(--mantine-color-body)]"
+				style={{
+					borderTop: "none",
+				}}>
 				<Card.Section
-					h={340}
+					h={240}
 					style={{
 						backgroundImage: "url(https://preline.co/assets/svg/component/polygon-bg-element.svg)",
 						backgroundPosition: "top",
@@ -96,24 +97,96 @@ export default function Profile() {
 					radius={160}
 					mx="auto"
 					mt={-80}
-					className="border-[2px] border-solid border-[var(--mantine-color-body)]"
+					className="border-[var(--mantine-color-body)]"
 				/>
-				<Text ta="center" fz="lg" fw={500} mt="sm">
+
+				<CopyButton className="text-gray-600 text-lg" value={`localhost:3000/${user.username}`} timeout={2000}>
+					{({ copied, copy }) => (
+						<Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
+							<ActionIcon
+								color={copied ? "teal" : "gray"}
+								variant="subtle"
+								onClick={copy}
+								style={{
+									position: "absolute",
+								}}>
+								{copied ? <IconCheck className="text-lg" /> : <IconLink className="text-lg" />}
+							</ActionIcon>
+						</Tooltip>
+					)}
+				</CopyButton>
+
+				<div className="text-center font-semibold text-lg mb-2 mt-4">
 					{user.username}
+					<div className="hs-dropdown absolute inline-flex [--trigger:hover]">
+						<button
+							id="hs-dropdown-basic"
+							type="button"
+							className="hs-dropdown-toggle p-2 inline-flex justify-center items-center gap-2 font-medium text-gray-700 align-middle transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800">
+							<svg
+								className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-gray-600"
+								width="16"
+								height="16"
+								viewBox="0 0 16 16"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg">
+								<path
+									d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+								/>
+							</svg>
+						</button>
+
+						<div
+							className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-lg rounded-lg p-2 dark:bg-gray-800 dark:border dark:border-gray-700 dark:divide-gray-700"
+							aria-labelledby="hs-dropdown-basic">
+							<a
+								className="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 dark:text-gray-400"
+								href="#">
+								<IconCurrencyEthereum style={{ width: rem(16) }} />
+								{`${user.owner.slice(0, 6)}...${user.owner.slice(-4)}`}
+								<CopyButton value={user.owner} timeout={2000}>
+									{({ copied, copy }) => (
+										<Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
+											<ActionIcon color={copied ? "teal" : "gray"} variant="subtle" onClick={copy}>
+												{copied ? (
+													<IconCheck style={{ width: rem(16) }} />
+												) : (
+													<IconCopy style={{ width: rem(16) }} />
+												)}
+											</ActionIcon>
+										</Tooltip>
+									)}
+								</CopyButton>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<Text ta="center" fz="md" c="dimmed">
+					Software Engineer
 				</Text>
 				<Text ta="center" fz="sm" c="dimmed">
-					Software Engineer
+					Joined: {convertTimestampToUTCDate(user.timestamp)}
 				</Text>
 				<Group mt="md" justify="center" gap={30}>
 					{items}
 				</Group>
-				<Text ta="center" fz="sm" mt="md" c="dimmed">
-					Joined: {convertTimestampToUTCDate(user.timestamp)}
-				</Text>
-				{/* <Button fullWidth radius="md" mt="xl" size="md" variant="default">
+				<Button radius="md" mt="xl" size="md" variant="subtle">
 					Follow
-				</Button> */}
+				</Button>
 			</Card>
+
+			{user && (
+				<div>
+					<p>Username: {user.username}</p>
+					<p>Chain ID: {user.chainId}</p>
+					<p>Owner: {user.owner}</p>
+					<p>Timestamp: {user.timestamp}</p>
+				</div>
+			)}
 		</div>
 	);
 }
