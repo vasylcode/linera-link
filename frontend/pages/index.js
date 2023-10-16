@@ -12,7 +12,7 @@ export default function Home() {
 			<div className={`${inter.className}`}>
 				<Header />
 				<Main />
-				{/* <Footer /> */}
+				<Footer />
 			</div>
 		</>
 	);
