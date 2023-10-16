@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { ConnectWallet } from "@/components/features";
-import { useQuery, gql } from "@apollo/client";
+import { useLazyQuery, useSubscription, gql } from "@apollo/client";
 import { IconCoin, IconLogout, IconWallet } from "@tabler/icons-react";
 import Link from "next/link";
 
 export default function Header() {
+	const [balance, setBalance] = useState(0);
 	const [login, setLogin] = useState(false);
 	const [user, setUser] = useState({});
 
@@ -28,11 +29,36 @@ export default function Header() {
 			accounts(accountOwner: $owner)
 		}
 	`;
+	const NOTIFICATION_SUBSCRIPTION = gql`
+		subscription Notifications($chainId: ID!) {
+			notifications(chainId: $chainId)
+		}
+	`;
 
-	const { loading, error, data } = useQuery(GET_BALANCE, {
+	let [balanceQuery, { data: balanceData, called: balanceCalled, error: balanceError }] = useLazyQuery(GET_BALANCE, {
 		variables: { owner: `User:${user && user.owner}` },
 		context: { clientName: "fungible" },
+		onCompleted: () => {
+			setBalance(balanceData.accounts);
+		},
 	});
+
+	if (!balanceCalled) {
+		void balanceQuery();
+	}
+	useSubscription(NOTIFICATION_SUBSCRIPTION, {
+		variables: { chainId: user.chainId },
+		context: { clientName: "fungible" },
+		onData: () => balanceQuery(),
+	});
+
+	// const { loading, error, data } = useQuery(GET_BALANCE, {
+	// 	variables: { owner: `User:${user && user.owner}` },
+	// 	context: { clientName: "fungible" },
+	// 	onCompleted: () => {
+	// 		setBalance(data.accounts);
+	// 	},
+	// });
 
 	return (
 		<header className="flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
@@ -112,7 +138,7 @@ export default function Header() {
 									</div>
 								</div>
 								<div className="flex flex-col items-center">
-									<span className="text-blue-600 text-lg">{data ? data.accounts : "000."}</span>
+									<span className="text-blue-600 text-lg">{balance ? balance : "000."}</span>
 									<IconCoin className="text-blue-500" />
 								</div>
 							</>
