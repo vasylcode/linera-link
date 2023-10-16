@@ -1,8 +1,10 @@
 <img src='frontend/public/link.png'>
 
 # Linera Link — Linking Creators, Building Community
+Web3 social appplication build on Linera SDK.
 
 ## Description
+soon...
 
 ## Deployment
 - Install [Rust](https://www.rust-lang.org/tools/install), [Linera](https://linera.dev/) and [Node.JS](https://nodejs.org/) on your local machine.
