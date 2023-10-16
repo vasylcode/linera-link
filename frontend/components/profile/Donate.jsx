@@ -40,7 +40,6 @@ export default function Donate({ user }) {
 	const [makePayment, { loading: paymentLoading }] = useMutation(MAKE_PAYMENT, {
 		onError: (error) => console.log(error),
 		onCompleted: (data) => {
-			console.log(data);
 			notifications.show({
 				title: "Payment Completed",
 				message: "Your payment has been successfully completed 🎉",
@@ -56,7 +55,6 @@ export default function Donate({ user }) {
 	});
 
 	const handleSubmit = async (form) => {
-		console.log(form);
 		makePayment({
 			variables: {
 				owner: `User:${loggedUser.owner}`,
