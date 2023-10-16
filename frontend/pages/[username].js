@@ -223,14 +223,14 @@ export default function Profile() {
 				</div>
 			</Tabs>
 
-			{user && (
+			{/* {user && (
 				<div className="container mx-auto">
 					<p>Username: {user.username}</p>
 					<p>Chain ID: {user.chainId}</p>
 					<p>Owner: {user.owner}</p>
 					<p>Timestamp: {user.timestamp}</p>
 				</div>
-			)}
+			)} */}
 
 			<Footer />
 		</>

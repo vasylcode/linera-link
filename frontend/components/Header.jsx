@@ -17,6 +17,10 @@ export default function Header() {
 		}
 	}, []);
 
+	// http://localhost:8080/chains/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65/applications/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65000000000000000000000000e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65020000000000000000000000
+	// http://localhost:8081/chains/be20093606a7296fbda537060becfecc62b5441fa784b3d26d6742152a80a1f9/applications/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65000000000000000000000000e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65020000000000000000000000
+	// http://localhost:8080/chains/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65/applications/e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65040000000000000001000000e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65060000000000000000000000
+
 	const userLogout = async (username) => {
 		setLogin(false);
 		setUser({});
@@ -29,13 +33,14 @@ export default function Header() {
 			accounts(accountOwner: $owner)
 		}
 	`;
-	const NOTIFICATION_SUBSCRIPTION = gql`
-		subscription Notifications($chainId: ID!) {
-			notifications(chainId: $chainId)
-		}
-	`;
+	// const NOTIFICATION_SUBSCRIPTION = gql`
+	// 	subscription Notifications($chainId: ID!) {
+	// 		notifications(chainId: $chainId)http://localhost:3000/adamgonzales# http://localhost:3000/davidfisher?port=8081&chain=be20093606a7296fbda537060becfecc62b5441fa784b3d26d6742152a80a1f9
+	// 	}
+	// `;
 
 	let [balanceQuery, { data: balanceData, called: balanceCalled, error: balanceError }] = useLazyQuery(GET_BALANCE, {
+		fetchPolicy: "network-only",
 		variables: { owner: `User:${user && user.owner}` },
 		context: { clientName: "fungible" },
 		onCompleted: () => {
@@ -46,11 +51,11 @@ export default function Header() {
 	if (!balanceCalled) {
 		void balanceQuery();
 	}
-	useSubscription(NOTIFICATION_SUBSCRIPTION, {
-		variables: { chainId: `${user && user.chainId}` },
-		context: { clientName: "fungible" },
-		onData: () => balanceQuery(),
-	});
+	// useSubscription(NOTIFICATION_SUBSCRIPTION, {
+	// 	variables: { chainId: `${user && user.chainId}` },
+	// 	context: { clientName: "fungible" },
+	// 	onData: () => balanceQuery(),
+	// });
 
 	// const { loading, error, data } = useQuery(GET_BALANCE, {
 	// 	variables: { owner: `User:${user && user.owner}` },
@@ -137,7 +142,7 @@ export default function Header() {
 										</a>
 									</div>
 								</div>
-								<div className="flex flex-col items-center">
+								<div className="flex flex-col items-center cursor-pointer" onClick={() => void balanceQuery()}>
 									<span className="text-blue-600 text-lg">{balance ? balance : "000."}</span>
 									<IconCoin className="text-blue-500" />
 								</div>
