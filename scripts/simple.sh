@@ -11,6 +11,8 @@ fi
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd ) && cd $SCRIPT_DIR/..
 WALLET_DIR="$1"
 
+cargo build --release
+
 LINK_BYTE_ID=`linera publish-bytecode ./target/wasm32-unknown-unknown/release/linera-link_{contract,service}.wasm`
 LINK_APP_ID=`linera create-application $LINK_BYTE_ID`
 
