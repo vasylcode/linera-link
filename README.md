@@ -12,7 +12,7 @@ soon...
 ```bash
 linera net up
 ```
-- Run deploy script:
+- Clone this repository, then run deploy script:
 ```bash
 ./scripts/simple.sh <working directory>
 ```
