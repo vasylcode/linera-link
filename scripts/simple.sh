@@ -52,6 +52,8 @@ echo -e "\nLinera-Fungible successfully deployed!"
 echo -e "Bytecode ID: $FUNGIBLE_BYTE_ID"
 echo -e "Application ID: $FUNGIBLE_APP_ID\n"
 
+bash frontend.sh e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65 $LINK_APP_ID $FUNGIBLE_APP_ID 8080
+
 echo -e "\nRunning service for wallet on port :8081...\n"
 linera --wallet $WALLET --storage $STORAGE service --port $2 &
 linera service &
