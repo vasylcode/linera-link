@@ -47,7 +47,7 @@ export default function Header() {
 		void balanceQuery();
 	}
 	useSubscription(NOTIFICATION_SUBSCRIPTION, {
-		variables: { chainId: user.chainId },
+		variables: { chainId: `${user && user.chainId}` },
 		context: { clientName: "fungible" },
 		onData: () => balanceQuery(),
 	});
