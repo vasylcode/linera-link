@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ConnectWallet } from "@/components/features";
-import { IconCoin } from "@tabler/icons-react";
+import { IconCoin, IconLogout, IconWallet } from "@tabler/icons-react";
 import Link from "next/link";
 
 export default function Header() {
@@ -14,6 +14,13 @@ export default function Header() {
 			setUser(JSON.parse(localStorage.getItem("user")));
 		}
 	}, []);
+
+	const userLogout = async (username) => {
+		setLogin(false);
+		setUser({});
+		localStorage.removeItem("user");
+		localStorage.removeItem("login");
+	};
 
 	return (
 		<header className="flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
@@ -67,7 +74,7 @@ export default function Header() {
 						</a>
 						{login ? (
 							<>
-								<Link
+								{/* <Link
 									className="flex items-center gap-x-2 font-medium text-gray-500 hover:text-blue-600 md:border-l md:border-gray-300 md:my-6 md:pl-6 md:pr-4 dark:border-gray-700 dark:text-gray-400 dark:hover:text-blue-500"
 									href={`/${user.username}`}>
 									<button
@@ -85,7 +92,33 @@ export default function Header() {
 										</svg>
 										{`${user.owner.slice(0, 6)}...${user.owner.slice(-4)}`}
 									</button>
-								</Link>
+								</Link> */}
+
+								<div className="hs-dropdown inline-flex [--trigger:hover]">
+									<Link
+										className="flex items-center gap-x-2 font-medium text-gray-500 hover:text-blue-600 md:border-l md:border-gray-300 md:my-6 md:pl-6 md:pr-4 dark:border-gray-700 dark:text-gray-400 dark:hover:text-blue-500"
+										href={`/${user.username}`}>
+										<button
+											id="hs-dropdown-login"
+											type="button"
+											className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md bg-blue-100 border border-transparent font-semibold text-blue-500 hover:text-white hover:bg-blue-100 focus:outline-none focus:ring-2 ring-offset-white focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+											data-hs-overlay="#hs-modal-wallet-connect">
+											<IconWallet />
+											{`${user.owner.slice(0, 6)}...${user.owner.slice(-4)}`}
+										</button>
+									</Link>
+
+									<div
+										className="mt-6 flex justify-center hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-48 hidden z-10 bg-white shadow-md rounded-lg p-2 dark:bg-gray-800 dark:border dark:border-gray-700 dark:divide-gray-700"
+										aria-labelledby="hs-dropdown-login">
+										<a
+											className="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-md text-gray-800 dark:text-gray-400"
+											href="#"
+											onClick={userLogout}>
+											Log out <IconLogout />
+										</a>
+									</div>
+								</div>
 								{/* <div className="flex flex-col items-center">
 									<span className="text-blue-600 text-lg">100</span>
 									<IconCoin className="text-blue-500" />

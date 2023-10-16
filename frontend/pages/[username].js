@@ -12,6 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { Supporters, Donate } from "@/components/profile";
 import { Header, Footer } from "@/components/";
+import Head from "next/head";
 
 const GET_USER = gql`
 	query GetUser($username: String) {
@@ -89,7 +90,10 @@ export default function Profile() {
 	}
 
 	return (
-		<div>
+		<>
+			<Head>
+				<title>Linera Link | {user.username}</title>
+			</Head>
 			<Header />
 
 			<Card padding="xl" radius="md" className="bg-[var(--mantine-color-body)]">
@@ -223,6 +227,6 @@ export default function Profile() {
 			)}
 
 			<Footer />
-		</div>
+		</>
 	);
 }
