@@ -16,9 +16,14 @@ export default function Donate({ user }) {
 		},
 	});
 
+	// const GET_ACCOUNTS = gql`
+	// 	query {
+	// 		accounts(accountOwner: "User:445991f46ae490fe207e60c95d0ed95bf4e7ed9c270d4fd4fa555587c2604fe1")
+	// 	}
+	// `;
 	const GET_ACCOUNTS = gql`
 		query {
-			accounts(accountOwner: "User:fc6fe4981a245008b84f1c023533f4b5b62cb3a803b39c8da5151f8b6a2135e0")
+			accountsKeys(count: 10)
 		}
 	`;
 
@@ -27,7 +32,7 @@ export default function Donate({ user }) {
 	if (loading) return <p>Loading...</p>;
 	if (error) return <p>Error: {error.message}</p>;
 
-	console.log(data);
+	console.log(2, data);
 
 	return (
 		<Paper

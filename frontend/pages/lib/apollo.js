@@ -1,7 +1,9 @@
 import { ApolloClient, InMemoryCache, HttpLink, split } from "@apollo/client";
 
+const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID;
 const LINK_APP_ID = process.env.NEXT_PUBLIC_LINK_APP_ID;
 const FUNGIBLE_APP_ID = process.env.NEXT_PUBLIC_FUNGIBLE_APP_ID;
+const FUNGIBLE_APP_PORT = process.env.NEXT_PUBLIC_FUNGIBLE_APP_PORT;
 
 const createApolloClient = (port, chainId) => {
 	// linera-link app
@@ -11,7 +13,7 @@ const createApolloClient = (port, chainId) => {
 
 	// fungible app
 	const fungibleLink = new HttpLink({
-		uri: `http://localhost:${port}/chains/${chainId}/applications/${FUNGIBLE_APP_ID}`,
+		uri: `http://localhost:${FUNGIBLE_APP_PORT}/chains/${CHAIN_ID}/applications/${FUNGIBLE_APP_ID}`,
 	});
 
 	// clear link query

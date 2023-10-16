@@ -62,12 +62,16 @@ export default function Profile() {
 		variables: { username },
 	});
 
-	if (loading) return <Loader className="mx-auto" color="blue" size="xl" type="dots" />;
+	if (loading)
+		return (
+			<div className="min-h-screen flex justify-center items-center">
+				<Loader color="blue" size="xl" type="dots" />
+			</div>
+		);
 	if (error) return <p>Error: {error.message}</p>;
 
 	const user = data.users;
-
-	if (error || (!loading && !data.users)) {
+	if (error || (!loading && !user)) {
 		router.push("/404");
 	}
 
@@ -88,6 +92,8 @@ export default function Profile() {
 		localStorage.setItem("user", JSON.stringify(user));
 		localStorage.setItem("login", true);
 	}
+
+	if (!user) return;
 
 	return (
 		<>
