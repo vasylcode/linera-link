@@ -1,4 +1,4 @@
-<img src='frontend/public/link.png' width='75%%'>
+<img src='frontend/public/link.png'>
 
 # Linera Link — Linking Creators, Building Community
 
