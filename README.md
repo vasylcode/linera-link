@@ -4,7 +4,9 @@
 Web3 social appplication build on Linera SDK.
 
 ## Description
-soon...
+Linera Link is a web3 application that combines the power of blockchain technology with the simplicity of social connections. The platform empowers creators, supports their work, and makes it easier than ever to give and receive donations.
+
+Share link – get support.
 
 ## Deployment
 - Install [Rust](https://www.rust-lang.org/tools/install), [Linera](https://linera.dev/) and [Node.JS](https://nodejs.org/) on your local machine.
